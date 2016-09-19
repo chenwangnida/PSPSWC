@@ -202,7 +202,7 @@ public class GraphPSO {
 				System.out.println("\tPARTICLE " + j);
 				p = swarm.get(j);
 				directedGraph = graphRepresentation(taskInput, taskOutput, p.dimensions);
-				System.out.println(directedGraph.toString());
+//				System.out.println(directedGraph.toString());
 
 				// 2. Evaluate fitness of particle
 				aggregationAttribute(p, directedGraph);
@@ -247,37 +247,37 @@ public class GraphPSO {
 				// 6. Update the position of particle
 				updatePosition(p);
 
-				// Mean QoS
-				meanAvailPerGen.add(meanAvailability / NUM_PARTICLES);
-				meanReliaPerGen.add(meanReliability / NUM_PARTICLES);
-				meanTimePerGen.add(meanTime / NUM_PARTICLES);
-				meanCostPerGen.add(meanCost / NUM_PARTICLES);
-				meanMatchTypeGen.add(meanMatchType / NUM_PARTICLES);
-				meanSemanticDistanceGen.add(meanSemanticDistance / NUM_PARTICLES);
-				meanFitness.add(meanFit / NUM_PARTICLES);
-
-				bestFitnessThisGen.add(bestFitThisGen);
-				bestAvailThisGen.add(bestAThisGen);
-				bestReliaThisGen.add(bestRThisGen);
-				bestTimeThisGen.add(bestTThisGen);
-				bestCostThisGen.add(bestCThisGen);
-				bestMatchTypeThisGen.add(bestMTThisGen);
-				bestSemanticDistanceThisGen.add(bestSDTThisGen);
-
-				bestFitnessSoFar.add(Particle.globalBestFitness);
-				bestAvailSoFar.add(Particle.globalBestAvailability);
-				bestReliaSoFar.add(Particle.globalBestReliability);
-				bestTimeSoFar.add(Particle.globalBestTime);
-				bestCostSoFar.add(Particle.globalBestCost);
-				bestMatchTypeSoFar.add(Particle.globalBestMatchingType);
-				bestSemanticDistanceSoFar.add(Particle.globalBestSemanticDistance);
-
-				initTime.add(initialization);
-				time.add(System.currentTimeMillis() - startTime);
-				initialization = 0;
-				i++;
-
 			}
+
+			// Mean QoS
+			meanAvailPerGen.add(meanAvailability / NUM_PARTICLES);
+			meanReliaPerGen.add(meanReliability / NUM_PARTICLES);
+			meanTimePerGen.add(meanTime / NUM_PARTICLES);
+			meanCostPerGen.add(meanCost / NUM_PARTICLES);
+			meanMatchTypeGen.add(meanMatchType / NUM_PARTICLES);
+			meanSemanticDistanceGen.add(meanSemanticDistance / NUM_PARTICLES);
+			meanFitness.add(meanFit / NUM_PARTICLES);
+
+			bestFitnessThisGen.add(bestFitThisGen);
+			bestAvailThisGen.add(bestAThisGen);
+			bestReliaThisGen.add(bestRThisGen);
+			bestTimeThisGen.add(bestTThisGen);
+			bestCostThisGen.add(bestCThisGen);
+			bestMatchTypeThisGen.add(bestMTThisGen);
+			bestSemanticDistanceThisGen.add(bestSDTThisGen);
+
+			bestFitnessSoFar.add(Particle.globalBestFitness);
+			bestAvailSoFar.add(Particle.globalBestAvailability);
+			bestReliaSoFar.add(Particle.globalBestReliability);
+			bestTimeSoFar.add(Particle.globalBestTime);
+			bestCostSoFar.add(Particle.globalBestCost);
+			bestMatchTypeSoFar.add(Particle.globalBestMatchingType);
+			bestSemanticDistanceSoFar.add(Particle.globalBestSemanticDistance);
+
+			initTime.add(initialization);
+			time.add(System.currentTimeMillis() - startTime);
+			initialization = 0;
+			i++;
 
 		}
 
@@ -452,7 +452,7 @@ public class GraphPSO {
 		double t = 0.0;
 		double c = 0.0;
 		double mt = 1.0;
-		double dst = 1.0; // Exact Match dst = 1 ; 0 < = dst < = 1
+		double dst = 0.0; // Exact Match dst = 1 ; 0 < = dst < = 1
 
 		// set a, r, c aggregation
 		Set<String> verticeSet = directedGraph.vertexSet();
@@ -485,12 +485,12 @@ public class GraphPSO {
 			dst += serviceEdge.getAvgsdt();
 		}
 
+		individual.setMatchingType(mt);
+		individual.setSemanticDistance(dst/directedGraph.edgeSet().size());
 		individual.setAvailability(a);
 		individual.setReliability(r);
 		individual.setTime(t);
 		individual.setCost(c);
-		individual.setSemanticDistance(dst);
-		individual.setMatchingType(mt);
 		individual.setStrRepresentation(directedGraph.toString());
 	}
 
@@ -584,8 +584,8 @@ public class GraphPSO {
 		t = normaliseTime(t);
 		c = normaliseCost(c);
 
-		double fitness = ((W1 * mt) + (W2 * dst) + (W3 * a) + (W4 * r) + (W5 * t) + (W6 * c));
-		return fitness;
+		individual.fitness = ((W1 * mt) + (W2 * dst) + (W3 * a) + (W4 * r) + (W5 * t) + (W6 * c));
+		return individual.fitness;
 	}
 
 	private double normaliseMatchType(double matchType) {
@@ -640,12 +640,13 @@ public class GraphPSO {
 		try {
 			FileWriter writer = new FileWriter(new File(logName));
 			for (int i = 0; i < bestFitnessSoFar.size(); i++) {
-				writer.append(String.format("%d %d %d %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n", i,
-						initTime.get(i), time.get(i), meanFitness.get(i), bestFitnessThisGen.get(i),
-						bestFitnessSoFar.get(i), meanAvailPerGen.get(i), meanReliaPerGen.get(i), meanTimePerGen.get(i),
-						meanCostPerGen.get(i), bestAvailThisGen.get(i), bestReliaThisGen.get(i), bestTimeThisGen.get(i),
-						bestCostThisGen.get(i), bestAvailSoFar.get(i), bestReliaSoFar.get(i), bestTimeSoFar.get(i),
-						bestCostSoFar.get(i)));
+				writer.append(String.format("%d %d %d %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n",
+						i, initTime.get(i), time.get(i),
+						meanFitness.get(i), bestFitnessThisGen.get(i),bestFitnessSoFar.get(i),
+						meanAvailPerGen.get(i), meanReliaPerGen.get(i), meanTimePerGen.get(i), meanCostPerGen.get(i),meanMatchTypeGen.get(i),meanSemanticDistanceGen.get(i),
+						bestAvailThisGen.get(i), bestReliaThisGen.get(i), bestTimeThisGen.get(i),bestCostThisGen.get(i),bestMatchTypeThisGen.get(i),bestSemanticDistanceThisGen.get(i),
+						bestAvailSoFar.get(i), bestReliaSoFar.get(i), bestTimeSoFar.get(i),bestCostSoFar.get(i),bestMatchTypeSoFar.get(i),bestSemanticDistanceSoFar.get(i)
+						));
 			}
 			writer.append(finalGraph);
 			writer.close();
