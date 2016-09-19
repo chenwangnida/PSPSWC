@@ -202,7 +202,7 @@ public class GraphPSO {
 				System.out.println("\tPARTICLE " + j);
 				p = swarm.get(j);
 				directedGraph = graphRepresentation(taskInput, taskOutput, p.dimensions);
-				System.out.println(directedGraph.toString());
+//				System.out.println(directedGraph.toString());
 
 				// 2. Evaluate fitness of particle
 				aggregationAttribute(p, directedGraph);
