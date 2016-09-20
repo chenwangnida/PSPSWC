@@ -6,7 +6,7 @@
 #
 # I know I have a directory here so I'll use it as my initial working directory
 #
-#$ -wd /vol/grid-solar/sgeusers/wangchen 
+#$ -wd /vol/grid-solar/sgeusers/wangchen
 #
 # End of the setup directives
 #
@@ -16,11 +16,11 @@
 #
 
 # For testing locally
-#JOB_ID=3
-#SGE_TASK_ID=1
+JOB_ID=3
+SGE_TASK_ID=1
 
 DIR_TMP="/local/tmp/wangchen/$JOB_ID/"
-DIR_HOME="/u/students/wangchen/"
+DIR_HOME="/am/courtenay/home1/wangchen/"
 DIR_GRID=$DIR_HOME"grid/"
 DIR_WORKSPACE="workspace/"
 DIR_PROGRAM=$DIR_HOME$DIR_WORKSPACE"PSPSWC/"
@@ -28,7 +28,7 @@ DIR_OUTPUT=$DIR_GRID$2 # Match this argument with dataset name
 
 FILE_JOB_LIST="CURRENT_JOBS.txt"
 FILE_RESULT_PREFIX="out"
-   
+
 mkdir -p $DIR_TMP
 
 # Preliminary test to ensure that the directory has been created successfully.
@@ -48,6 +48,7 @@ echo $JOB_ID >> $DIR_GRID$FILE_JOB_LIST
 # Copy the files required for processing into the temporary directory.
 cp -r $DIR_PROGRAM"bin" $DIR_TMP
 cp $1/* $DIR_TMP # Copy datasets
+cp $DIR_HOME/workspace/JGraphT/jgrapht-0.9.2/lib/* $DIR_TMP
 
 mkdir -p $DIR_TMP"results"
 
@@ -58,7 +59,7 @@ echo "Running: "
 seed=$SGE_TASK_ID
 result=$FILE_RESULT_PREFIX$seed.stat
 
-java -classpath ./bin:. pso.SinglePassGraphPSO $result $hist_result problem.xml services-output.xml taxonomy.xml $seed
+java -classpath ./bin:.:jgraph-5.13.0.0.jar:jgrapht-core-0.9.2.jar:jgrapht-ext-0.9.2-uber.jar:jgrapht-ext-0.9.2.jar: jgraphx-2.0.0.1.jar ec.pso.GraphPSO $result $hist_result problem.xml services-output.xml taxonomy.xml con1988815758 $seed
 #java -classpath ./bin:. pso.GraphPSO $result $hist_result problem.xml services-output.xml taxonomy.xml $seed
 
 cp $result ./results
