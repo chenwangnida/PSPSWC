@@ -59,11 +59,9 @@ echo "Running: "
 seed=$SGE_TASK_ID
 result=$FILE_RESULT_PREFIX$seed.stat
 
-java -classpath ./bin:.:jgraph-5.13.0.0.jar:jgrapht-core-0.9.2.jar:jgrapht-ext-0.9.2-uber.jar:jgrapht-ext-0.9.2.jar: jgraphx-2.0.0.1.jar ec.pso.GraphPSO $result $hist_result problem.xml services-output.xml taxonomy.xml con1988815758 $seed
-#java -classpath ./bin:. pso.GraphPSO $result $hist_result problem.xml services-output.xml taxonomy.xml $seed
+java -classpath ./bin:.:jgraph-5.13.0.0.jar :jgrapht-core-0.9.2.jar :jgrapht-demo-0.9.2.jar :jgrapht-ext-0.9.2-uber.jar :jgrapht-ext-0.9.2.jar :jgraphx-2.0.0.1.jar ec.pso.GraphPSO $result $hist_result problem.xml services-output.xml taxonomy.xml con1988815758 $seed
 
 cp $result ./results
-cp $hist_result ./results
 
 # Now we move the output to a place to pick it up from later and clean up
 cd results
