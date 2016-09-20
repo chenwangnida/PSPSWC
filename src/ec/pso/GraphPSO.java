@@ -36,6 +36,12 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class GraphPSO {
+	// File setting
+	String rootConcept = "TravelInformation";
+	String lName = "out.stat";
+	String taskFileName = "problem.xml";
+	String serviceFileName = "services-output.xml";
+	String taxonomyFileName = "taxonomy.owl";
 	// PSO settings
 	public List<Particle> swarm = new ArrayList<Particle>();
 	public static final int MAX_NUM_ITERATIONS = 100;
@@ -118,16 +124,15 @@ public class GraphPSO {
 	Map<String, Integer> edgeCount = new HashMap<String, Integer>();
 
 	public static void main(String[] args) {
-		new GraphPSO(args[0], args[1], args[2], args[3], args[4], args[5], Long.valueOf(args[6]));
+
+			new GraphPSO(Long.valueOf(args[0]));
+
 	}
 
-	public GraphPSO(String lName, String hlName, String taskFileName, String serviceFileName, String taxonomyFileName,
-			String rootConcept, long seed) {
+	public GraphPSO(long seed) {
 		initialisationStartTime = System.currentTimeMillis();
 
 		logName = lName;
-		histogramLogName = hlName;
-		rootconcept = rootConcept;
 		random = new Random(seed);
 
 		// Initial all data related to Web service composition pools
@@ -202,7 +207,7 @@ public class GraphPSO {
 				System.out.println("\tPARTICLE " + j);
 				p = swarm.get(j);
 				directedGraph = graphRepresentation(taskInput, taskOutput, p.dimensions);
-//				System.out.println(directedGraph.toString());
+				// System.out.println(directedGraph.toString());
 
 				// 2. Evaluate fitness of particle
 				aggregationAttribute(p, directedGraph);
@@ -486,7 +491,7 @@ public class GraphPSO {
 		}
 
 		individual.setMatchingType(mt);
-		individual.setSemanticDistance(dst/directedGraph.edgeSet().size());
+		individual.setSemanticDistance(dst / directedGraph.edgeSet().size());
 		individual.setAvailability(a);
 		individual.setReliability(r);
 		individual.setTime(t);
@@ -640,41 +645,18 @@ public class GraphPSO {
 		try {
 			FileWriter writer = new FileWriter(new File(logName));
 			for (int i = 0; i < bestFitnessSoFar.size(); i++) {
-				writer.append(String.format("%d %d %d %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n",
-						i, initTime.get(i), time.get(i),
-						meanFitness.get(i), bestFitnessThisGen.get(i),bestFitnessSoFar.get(i),
-						meanAvailPerGen.get(i), meanReliaPerGen.get(i), meanTimePerGen.get(i), meanCostPerGen.get(i),meanMatchTypeGen.get(i),meanSemanticDistanceGen.get(i),
-						bestAvailThisGen.get(i), bestReliaThisGen.get(i), bestTimeThisGen.get(i),bestCostThisGen.get(i),bestMatchTypeThisGen.get(i),bestSemanticDistanceThisGen.get(i),
-						bestAvailSoFar.get(i), bestReliaSoFar.get(i), bestTimeSoFar.get(i),bestCostSoFar.get(i),bestMatchTypeSoFar.get(i),bestSemanticDistanceSoFar.get(i)
-						));
+				writer.append(String.format("%d %d %d %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n", i,
+						initTime.get(i), time.get(i), meanFitness.get(i), bestFitnessThisGen.get(i),
+						bestFitnessSoFar.get(i), meanAvailPerGen.get(i), meanReliaPerGen.get(i), meanTimePerGen.get(i),
+						meanCostPerGen.get(i), meanMatchTypeGen.get(i), meanSemanticDistanceGen.get(i),
+						bestAvailThisGen.get(i), bestReliaThisGen.get(i), bestTimeThisGen.get(i),
+						bestCostThisGen.get(i), bestMatchTypeThisGen.get(i), bestSemanticDistanceThisGen.get(i),
+						bestAvailSoFar.get(i), bestReliaSoFar.get(i), bestTimeSoFar.get(i), bestCostSoFar.get(i),
+						bestMatchTypeSoFar.get(i), bestSemanticDistanceSoFar.get(i)));
 			}
 			writer.append(finalGraph);
+			writer.append("\n");
 			writer.close();
-//
-//			FileWriter histogramWriter = new FileWriter(new File(histogramLogName));
-//
-//			// Write node histogram
-//			List<String> keyList = new ArrayList<String>(nodeCount.keySet());
-//			Collections.sort(keyList);
-//
-//			for (String key : keyList)
-//				histogramWriter.append(key + " ");
-//			histogramWriter.append("\n");
-//			for (String key : keyList)
-//				histogramWriter.append(String.format("%d ", nodeCount.get(key)));
-//			histogramWriter.append("\n");
-//
-//			// Write edge histogram
-//			List<String> edgeList = new ArrayList<String>(edgeCount.keySet());
-//			Collections.sort(edgeList);
-//
-//			for (String key : edgeList)
-//				histogramWriter.append(key + " ");
-//			histogramWriter.append("\n");
-//			for (String key : edgeList)
-//				histogramWriter.append(String.format("%d ", edgeCount.get(key)));
-//			histogramWriter.append("\n");
-//			histogramWriter.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
