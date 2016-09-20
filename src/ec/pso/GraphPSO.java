@@ -38,10 +38,6 @@ import org.xml.sax.SAXException;
 public class GraphPSO {
 	// File setting
 	String rootConcept = "TravelInformation";
-	String lName = "out.stat";
-	String taskFileName = "problem.xml";
-	String serviceFileName = "services-output.xml";
-	String taxonomyFileName = "taxonomy.owl";
 	// PSO settings
 	public List<Particle> swarm = new ArrayList<Particle>();
 	public static final int MAX_NUM_ITERATIONS = 100;
@@ -125,11 +121,12 @@ public class GraphPSO {
 
 	public static void main(String[] args) {
 
-			new GraphPSO(Long.valueOf(args[0]));
+		new GraphPSO(args[0], args[1], args[2], args[3], Long.valueOf(args[4]));
 
 	}
 
-	public GraphPSO(long seed) {
+	public GraphPSO(String lName, String taskFileName, String serviceFileName, String taxonomyFileName,
+			long seed) {
 		initialisationStartTime = System.currentTimeMillis();
 
 		logName = lName;
@@ -657,6 +654,7 @@ public class GraphPSO {
 			writer.append(finalGraph);
 			writer.append("\n");
 			writer.close();
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
