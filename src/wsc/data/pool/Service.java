@@ -314,9 +314,9 @@ public class Service implements Comparable<Service> {
 		// find the lowest common ancestor
 		String lca = new NaiveLcaFinder<String, DefaultEdge>(g).findLca(a, b);
 
-		double N = new DijkstraShortestPath(g, GraphPSO.rootconcept, lca).getPathLength() + 1;
-		double N1 = new DijkstraShortestPath(g, GraphPSO.rootconcept, a).getPathLength() + 1;
-		double N2 = new DijkstraShortestPath(g, GraphPSO.rootconcept, b).getPathLength() + 1;
+		double N = new DijkstraShortestPath(g, GraphPSO.rootconcept, lca).getPathLength();
+		double N1 = new DijkstraShortestPath(g, GraphPSO.rootconcept, a).getPathLength();
+		double N2 = new DijkstraShortestPath(g, GraphPSO.rootconcept, b).getPathLength();
 
 		double sim = 2 * N / (N1 + N2);
 		// System.out.println("SemanticDistance:" + sim + "

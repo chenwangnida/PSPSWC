@@ -36,8 +36,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class GraphPSO {
-	// File setting
-	String rootConcept = "TravelInformation";
 	// PSO settings
 	public List<Particle> swarm = new ArrayList<Particle>();
 	public static final int MAX_NUM_ITERATIONS = 100;
@@ -53,7 +51,6 @@ public class GraphPSO {
 	public static ArrayList<Double> bestFitnessThisGen = new ArrayList<Double>();
 	public static ArrayList<Double> bestFitnessSoFar = new ArrayList<Double>();
 	public static String logName;
-	public static String histogramLogName;
 	public static Long initialisationStartTime;
 
 	// Fitness function weights
@@ -110,7 +107,7 @@ public class GraphPSO {
 	Map<String, double[]> serviceQoSMap = new HashMap<String, double[]>();
 
 	public static DirectedGraph<String, DefaultEdge> ontologyDAG;
-	public static String rootconcept;
+	public static final String rootconcept = "TOPNODE";
 	public static List<String> taskInput;
 	public static List<String> taskOutput;
 	private Random random;

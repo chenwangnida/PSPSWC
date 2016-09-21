@@ -3607,7 +3607,10 @@
     <ns2:Class ns1:ID="con529251608">
         <ns3:subClassOf ns1:resource="#con1569096559"/>
     </ns2:Class>
-    <ns2:Class ns1:ID="con952195063"/>
+    <ns2:Class ns1:ID="TOPNODE"/>
+    <ns2:Class ns1:ID="con952195063">
+        <ns3:subClassOf ns1:resource="#TOPNODE"/>
+    </ns2:Class>
     <ns2:Class ns1:ID="con1769200652">
         <ns3:subClassOf ns1:resource="#con800426440"/>
     </ns2:Class>
