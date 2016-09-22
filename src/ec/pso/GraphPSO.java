@@ -122,8 +122,7 @@ public class GraphPSO {
 
 	}
 
-	public GraphPSO(String lName, String taskFileName, String serviceFileName, String taxonomyFileName,
-			long seed) {
+	public GraphPSO(String lName, String taskFileName, String serviceFileName, String taxonomyFileName, long seed) {
 		initialisationStartTime = System.currentTimeMillis();
 
 		logName = lName;
@@ -201,7 +200,7 @@ public class GraphPSO {
 				System.out.println("\tPARTICLE " + j);
 				p = swarm.get(j);
 				directedGraph = graphRepresentation(taskInput, taskOutput, p.dimensions);
-				// System.out.println(directedGraph.toString());
+//				System.out.println(directedGraph.toString());
 
 				// 2. Evaluate fitness of particle
 				aggregationAttribute(p, directedGraph);
@@ -469,13 +468,7 @@ public class GraphPSO {
 		}
 
 		// set time aggregation
-		List<String> longestVertexList = getLongestPathVertexList(directedGraph);
-		for (String v : longestVertexList) {
-			if (!v.equals("startNode") && !v.equals("endNode")) {
-				double qos[] = serviceQoSMap.get(v);
-				t += qos[TIME];
-			}
-		}
+		t = getLongestPathVertexList(directedGraph, serviceQoSMap);
 
 		// set mt,dst aggregation
 
@@ -547,24 +540,31 @@ public class GraphPSO {
 		}
 	}
 
-	public static List<String> getLongestPathVertexList(DirectedGraph<String, ServiceEdge> g) {
+	public static double getLongestPathVertexList(DirectedGraph<String, ServiceEdge> g,
+			Map<String, double[]> serQoSMap) {
 		// A algorithm to find all paths
 		AllDirectedPaths<String, ServiceEdge> allPath = new AllDirectedPaths<String, ServiceEdge>(g);
 		List<GraphPath<String, ServiceEdge>> pathList = allPath.getAllPaths("startNode", "endNode", true, null);
-
-		int MaxPathLength = 0;
-		int IndexPathLength = 0;
+		double maxTime = 0;
+		double sumTime;
 
 		for (int i = 0; i < pathList.size(); i++) {
 
-			int pathLength = pathList.get(i).getEdgeList().size();
-			if (pathLength > MaxPathLength) {
-				IndexPathLength = i;
-				MaxPathLength = pathLength;
+			sumTime = 0;
+
+			for (String v : Graphs.getPathVertexList(pathList.get(i))) {
+				if (!v.equals("startNode") && !v.equals("endNode")) {
+					double qos[] = serQoSMap.get(v);
+					sumTime += qos[TIME];
+				}
 			}
+			if (sumTime > maxTime) {
+				maxTime = sumTime;
+			}
+
 		}
 		// return pathList.get(IndexPathLength).getEdgeList();
-		return Graphs.getPathVertexList(pathList.get(IndexPathLength));
+		return maxTime;
 	}
 
 	private double calculateFitness(Particle individual) {
