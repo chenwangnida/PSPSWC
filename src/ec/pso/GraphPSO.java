@@ -639,7 +639,7 @@ public class GraphPSO {
 		try {
 			FileWriter writer = new FileWriter(new File(logName));
 			for (int i = 0; i < bestFitnessSoFar.size(); i++) {
-				writer.append(String.format("%d %d %d %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n", i,
+				writer.append(String.format("%d %d %d %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n", i,
 						initTime.get(i), time.get(i), meanFitness.get(i), bestFitnessThisGen.get(i),
 						bestFitnessSoFar.get(i), meanAvailPerGen.get(i), meanReliaPerGen.get(i), meanTimePerGen.get(i),
 						meanCostPerGen.get(i), meanMatchTypeGen.get(i), meanSemanticDistanceGen.get(i),
