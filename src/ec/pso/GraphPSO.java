@@ -54,8 +54,8 @@ public class GraphPSO {
 	public static Long initialisationStartTime;
 
 	// Fitness function weights
-	public static final double W1 = 0.25;
-	public static final double W2 = 0.25;
+	public static final double W1 = 0.1;
+	public static final double W2 = 0.4;
 	public static final double W3 = 0.125;
 	public static final double W4 = 0.125;
 	public static final double W5 = 0.125;

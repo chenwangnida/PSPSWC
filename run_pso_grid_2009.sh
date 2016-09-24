@@ -2,7 +2,7 @@
 
 need sgegrid
 
-NUM_RUNS=50
+NUM_RUNS=40
 
 for i in {1..3}; do
   qsub -t 1-$NUM_RUNS:1 graph_pso.sh ~/workspace/swsc2009/Set0${i}MetaData 2009-semantic-pso${i};
