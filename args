@@ -18,6 +18,6 @@ out.stat hist.stat problem.xml services-output.xml taxonomy.owl con2050921659 12
 
 
  <ns2:Class ns1:ID="TOPNODE"/>
- <ns2:Class ns1:ID="con2050921659">
+ <ns2:Class ns1:ID="con1659320421">
    <ns3:subClassOf ns1:resource="#TOPNODE"/>
  </ns2:Class>
