@@ -121,7 +121,7 @@ public class SemanticsPool {
 					pConn.setMatchType(1);
 
 				}else{
-					pConn.setMatchType(0.5);
+					pConn.setMatchType(0.75);
 				}
 				return pConn;
 			}

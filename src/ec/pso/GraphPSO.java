@@ -418,7 +418,7 @@ public class GraphPSO {
 		// shrunk repository
 		MAXIMUM_COST *= services.size();
 		MAXIMUM_TIME *= services.size();
-		MAXINUM_SEMANTICDISTANCE *= instSize / 2;
+//		MAXINUM_SEMANTICDISTANCE *= instSize / 2;
 
 	}
 
@@ -584,6 +584,7 @@ public class GraphPSO {
 		c = normaliseCost(c);
 
 		individual.fitness = ((W1 * mt) + (W2 * dst) + (W3 * a) + (W4 * r) + (W5 * t) + (W6 * c));
+
 		return individual.fitness;
 	}
 
