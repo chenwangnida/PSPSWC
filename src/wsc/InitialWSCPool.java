@@ -100,10 +100,18 @@ public class InitialWSCPool {
 								outputrequ, this.semanticsPool);
 						pConn.setOutputInst(outputInst);
 						pConn.setOutputrequ(outputrequ);
-						pConn.setSourceServiceID(graphOutputListMap.get(outputInst).getServiceID());
+
+						if (graphOutputListMap.get(outputInst) == null) {
+							pConn.setSourceServiceID("startNode");
+							// System.err.println(outputInst+"Inst not in the
+							// map");
+						} else {
+							pConn.setSourceServiceID(graphOutputListMap.get(outputInst).getServiceID());
+						}
+						// pConn.setSourceServiceID(graphOutputListMap.get(outputInst).getServiceID());
 						pConn.setSimilarity(similarity);
 						pConnList.add(pConn);
-						break;
+						// break;
 					}
 				}
 			}
@@ -178,8 +186,7 @@ public class InitialWSCPool {
 	}
 
 	public void createGraphService(List<String> taskInput, List<String> taskOutput,
-			DirectedGraph<String, ServiceEdge> directedGraph, float[] weights,
-			Map<String, Integer> serviceToIndexMap) {
+			DirectedGraph<String, ServiceEdge> directedGraph, float[] weights, Map<String, Integer> serviceToIndexMap) {
 
 		graphOutputList.clear();
 		graphOutputListMap.clear();

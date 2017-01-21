@@ -54,7 +54,7 @@ echo $JOB_ID >> $DIR_GRID$FILE_JOB_LIST
 # Copy the files required for processing into the temporary directory.
 cp -r $DIR_PROGRAM"bin" $DIR_TMP
 cp $1/* $DIR_TMP # Copy datasets
-cp ~/lib/* $DIR_TMP # Copy jars
+cp ~/lib2/* $DIR_TMP # Copy jars
 
 mkdir -p $DIR_TMP"results"
 
@@ -68,7 +68,8 @@ echo "Running: "
 seed=$SGE_TASK_ID
 result=$FILE_RESULT_PREFIX$seed.stat
 
-java -classpath ./bin:.:jgraph-5.13.0.0.jar:jgrapht-core-0.9.2.jar:jgrapht-ext-0.9.2-uber.jar:jgrapht-ext-0.9.2.jar:jgraphx-2.0.0.1.jar ec.pso.GraphPSO $result problem.xml services-output.xml taxonomy.owl $seed
+java -classpath ./bin:.:jgraph-5.13.0.0.jar:jgrapht-core-1.0.1.jar:guava-20.0.jar ec.pso.GraphPSO $result problem.xml services-output.xml taxonomy.owl $seed
+#java -classpath ./bin:.:jgraph-5.13.0.0.jar:jgrapht-core-0.9.2.jar:jgrapht-ext-0.9.2-uber.jar:jgrapht-ext-0.9.2.jar:jgraphx-2.0.0.1.jar ec.pso.GraphPSO $result problem.xml services-output.xml taxonomy.owl $seed
 
 cp $result ./results
 

@@ -171,7 +171,7 @@ public class Service implements Comparable<Service> {
 					boolean foundmatched = pConn.isConsidered();
 					if (foundmatched) {
 						serInput.setSatified(true);
-						break;// each inst can only be used for one time
+//						break;// each inst can only be used for one time
 					}
 
 				}
@@ -237,7 +237,7 @@ public class Service implements Comparable<Service> {
 								existInput, semanticsPool);
 						pConn.setSimilarity(similarity);
 						pConnList0.add(pConn);
-						break;// each inst can only be used for one time
+//						break;// each inst can only be used for one time
 					}
 
 				}

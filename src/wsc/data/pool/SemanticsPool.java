@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
+import ec.pso.GraphPSO;
 import wsc.graph.ParamterConn;
 import wsc.owl.bean.OWLClass;
 import wsc.owl.bean.OWLInst;
@@ -45,36 +46,6 @@ public class SemanticsPool {
 		return sp;
 	}
 
-	/**
-	 * check semantic matching given two instances check if givenInst equals to
-	 * relatedInst or givenInst is subclass of relatedInst
-	 *
-	 * @param givenInst
-	 * @param existInst
-	 * @return boolean
-	 */
-//	public boolean searchSemanticMatchFromInst(String givenInst, String existInst) {
-//
-//		OWLClass givenClass = this.owlClassHashMap
-//				.get(this.owlInstHashMap.get(givenInst).getRdfType().getResource().substring(1));
-//		OWLClass relatedClass = this.owlClassHashMap
-//				.get(this.owlInstHashMap.get(existInst).getRdfType().getResource().substring(1));
-//
-//		// search for the potential semantic matching relationship
-//
-//		while (true) {
-//			// Exact and PlugIn matching types
-//			if (givenClass.getID().equals(relatedClass.getID())) {
-//				return true;
-//			}
-//			if (givenClass.getSubClassOf() == null || givenClass.getSubClassOf().getResource().equals("")) {
-//				break;
-//			}
-//			givenClass = this.owlClassHashMap.get(givenClass.getSubClassOf().getResource().substring(1));
-//		}
-//
-//		return false;
-//	}
 
 	public ParamterConn searchSemanticMatchFromInst(String givenInst, String existInst) {
 
@@ -111,30 +82,60 @@ public class SemanticsPool {
 		// search for the potential semantic matching relationship
 		ParamterConn pConn = new ParamterConn();
 
-		int i = 0;
+		// change the while(true) below into query matchmaking
+		String a = givenClass.getID();
+		String b = relatedClass.getID();
+		if (GraphPSO.semanticMatrix.get(a, b) != null) {
+
+			pConn.setConsidered(true);
+
+			if (a.equals(b)) {
+				pConn.setMatchType(1);
+			} else {
+				pConn.setMatchType(0.75);
+			}
+			return pConn;
+		}
+
+//		int i = 0;
+//
+//		while (true) {
+//			// Exact and PlugIn matching types
+//			if (givenClass.getID().equals(relatedClass.getID())) {
+//				pConn.setConsidered(true);
+//				if(i==0 ){
+//					pConn.setMatchType(1);
+//
+//				}else{
+//					pConn.setMatchType(0.75);
+//				}
+//				return pConn;
+//			}
+//			if (givenClass.getSubClassOf() == null || givenClass.getSubClassOf().getResource().equals("")) {
+//				break;
+//			}
+//			givenClass = this.owlClassHashMap.get(givenClass.getSubClassOf().getResource().substring(1));
+//			i++;
+//		}
+		pConn.setConsidered(false);
+		return pConn;
+	}
+
+
+	public boolean isSemanticMatchFromConcept(OWLClass givenClass, OWLClass relatedClass) {
 
 		while (true) {
 			// Exact and PlugIn matching types
 			if (givenClass.getID().equals(relatedClass.getID())) {
-				pConn.setConsidered(true);
-				if(i==0 ){
-					pConn.setMatchType(1);
-
-				}else{
-					pConn.setMatchType(0.75);
-				}
-				return pConn;
+				return true;
 			}
 			if (givenClass.getSubClassOf() == null || givenClass.getSubClassOf().getResource().equals("")) {
 				break;
 			}
 			givenClass = this.owlClassHashMap.get(givenClass.getSubClassOf().getResource().substring(1));
-			i++;
 		}
-		pConn.setConsidered(false);
-		return pConn;
+		return false;
 	}
-
 	// /** Test data from unmarshalling process
 	// * @param args
 	// */

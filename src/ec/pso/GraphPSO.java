@@ -3,6 +3,8 @@ package ec.pso;
 import wsc.InitialWSCPool;
 import wsc.data.pool.Service;
 import wsc.graph.ServiceEdge;
+import wsc.graph.ServiceInput;
+import wsc.graph.ServiceOutput;
 import wsc.owl.bean.OWLClass;
 
 import java.io.File;
@@ -10,7 +12,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,7 +27,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.Graphs;
-import org.jgrapht.alg.AllDirectedPaths;
+import org.jgrapht.alg.DijkstraShortestPath;
+import org.jgrapht.alg.NaiveLcaFinder;
+import org.jgrapht.alg.shortestpath.AllDirectedPaths;
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
@@ -34,6 +37,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 
 public class GraphPSO {
 	// PSO settings
@@ -54,8 +60,8 @@ public class GraphPSO {
 	public static Long initialisationStartTime;
 
 	// Fitness function weights
-	public static final double W1 = 0.1;
-	public static final double W2 = 0.4;
+	public static final double W1 = 0.25;
+	public static final double W2 = 0.25;
 	public static final double W3 = 0.125;
 	public static final double W4 = 0.125;
 	public static final double W5 = 0.125;
@@ -106,6 +112,9 @@ public class GraphPSO {
 	public Map<String, Integer> serviceToIndexMap = new HashMap<String, Integer>();
 	Map<String, double[]> serviceQoSMap = new HashMap<String, double[]>();
 
+	public static Table<String, String, Double> semanticMatrix;
+
+
 	public static DirectedGraph<String, DefaultEdge> ontologyDAG;
 	public static final String rootconcept = "TOPNODE";
 	public static List<String> taskInput;
@@ -138,10 +147,13 @@ public class GraphPSO {
 			initialWSCPool.allRelevantService(taskInput, taskOutput);
 
 			System.out.println("All relevant service: " + initialWSCPool.getServiceSequence().size());
+			semanticMatrix = HashBasedTable.create();
+
 
 		} catch (JAXBException | IOException e) {
 			e.printStackTrace();
 		}
+
 
 		MapServiceToQoS(initialWSCPool.getServiceSequence());
 		mapServicesToIndex(initialWSCPool.getServiceSequence(), serviceToIndexMap);
@@ -149,6 +161,8 @@ public class GraphPSO {
 				initialWSCPool.getSemanticsPool().getOwlInstHashMap().size());
 
 		ontologyDAG = createOntologyDAG(initialWSCPool);
+
+		createSemanticMatrix();
 
 		numDimensions = initialWSCPool.getServiceSequence().size();
 
@@ -331,6 +345,98 @@ public class GraphPSO {
 	}
 
 	/**
+	 * All parameter-related concepts are converted and pre-calculated semantic
+	 * quality with their subsumed existing concepts
+	 *
+	 * @param fileName
+	 */
+
+	private void createSemanticMatrix() {
+
+		Set<OWLClass> parameterconcepts = new HashSet<OWLClass>();
+
+		// Load all parameter-related concepts from task-relevant web services
+
+		for (Service ser : initialWSCPool.getServiceSequence()) {
+
+			for (ServiceInput serInput : ser.getInputList()) {
+				OWLClass pConcept = initialWSCPool.getSemanticsPool().getOwlClassHashMap()
+						.get(initialWSCPool.getSemanticsPool().getOwlInstHashMap().get(serInput.getInput()).getRdfType()
+								.getResource().substring(1));
+				parameterconcepts.add(pConcept);
+
+			}
+
+			for (ServiceOutput serOutput : ser.getOutputList()) {
+
+				OWLClass pConcept = initialWSCPool.getSemanticsPool().getOwlClassHashMap()
+						.get(initialWSCPool.getSemanticsPool().getOwlInstHashMap().get(serOutput.getOutput())
+								.getRdfType().getResource().substring(1));
+				parameterconcepts.add(pConcept);
+
+			}
+		}
+
+		// Load all parameter-related concepts from given task input and
+		// required output
+
+		for (String tskInput : taskInput) {
+			OWLClass pConcept = initialWSCPool.getSemanticsPool().getOwlClassHashMap().get(initialWSCPool
+					.getSemanticsPool().getOwlInstHashMap().get(tskInput).getRdfType().getResource().substring(1));
+			parameterconcepts.add(pConcept);
+		}
+
+		for (String tskOutput : taskOutput) {
+			OWLClass pConcept = initialWSCPool.getSemanticsPool().getOwlClassHashMap().get(initialWSCPool
+					.getSemanticsPool().getOwlInstHashMap().get(tskOutput).getRdfType().getResource().substring(1));
+			parameterconcepts.add(pConcept);
+		}
+
+		System.out.println("All concepts involved in semantic calcu NO.: " + parameterconcepts.size());
+
+		for (OWLClass pCon : parameterconcepts) {
+			for (OWLClass pCon0 : parameterconcepts) {
+				// if the pCon or PCon all parent class equal to pCon0
+				if (initialWSCPool.getSemanticsPool().isSemanticMatchFromConcept(pCon, pCon0)) {
+
+					double similarity = CalculateSimilarityMeasure(ontologyDAG, pCon.getID(), pCon0.getID());
+
+					semanticMatrix.put(pCon.getID(), pCon0.getID(), similarity);
+				}
+				// System.out.println(
+				// "givenInput: " + pCon + " existInput: " + pCon0 + " Semantic
+				// Quality: " + similarity);
+			}
+		}
+
+		// if (WSCInitializer.semanticMatrix.get(giveninput, existInput)==null){
+		// similarity = WSCInitializer.semanticMatrix.get(existInput,
+		// giveninput);
+		// }else{
+		// similarity = WSCInitializer.semanticMatrix.get(giveninput,
+		// existInput);
+		// }
+
+	}
+
+	public static double CalculateSimilarityMeasure(DirectedGraph<String, DefaultEdge> g, String a, String b) {
+
+		double similarityValue;
+
+		// find the lowest common ancestor
+		String lca = new NaiveLcaFinder<String, DefaultEdge>(g).findLca(a, b);
+
+		double N = new DijkstraShortestPath(g, rootconcept, lca).getPathLength();
+		double N1 = new DijkstraShortestPath(g,rootconcept, a).getPathLength();
+		double N2 = new DijkstraShortestPath(g,rootconcept, b).getPathLength();
+
+		double sim = 2 * N / (N1 + N2);
+
+		return sim;
+	}
+
+
+	/**
 	 * Parses the WSC task file with the given name, extracting input and output
 	 * values to be used as the composition task.
 	 *
@@ -502,6 +608,8 @@ public class GraphPSO {
 			removeCurrentdangle(directedGraph, dangleVerticeList);
 		}
 
+		directedGraph.removeEdge("startNode", "endNode");
+
 		return directedGraph;
 
 	}
@@ -552,7 +660,8 @@ public class GraphPSO {
 
 			sumTime = 0;
 
-			for (String v : Graphs.getPathVertexList(pathList.get(i))) {
+//			for (String v : Graphs.getPathVertexList(pathList.get(i))) {
+			for (String v : (pathList.get(i).getVertexList())) {
 				if (!v.equals("startNode") && !v.equals("endNode")) {
 					double qos[] = serQoSMap.get(v);
 					sumTime += qos[TIME];
@@ -584,6 +693,8 @@ public class GraphPSO {
 		c = normaliseCost(c);
 
 		individual.fitness = ((W1 * mt) + (W2 * dst) + (W3 * a) + (W4 * r) + (W5 * t) + (W6 * c));
+//		individual.fitness = ((0.25 * a) + (0.25 * r) + (0.25 * t) + (0.25 * c));
+
 
 		return individual.fitness;
 	}
