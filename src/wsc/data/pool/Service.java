@@ -233,7 +233,7 @@ public class Service implements Comparable<Service> {
 						} else {
 							pConn.setSourceServiceID(graphOutputListMap.get(giveninput).getServiceID());
 						}
-						double similarity = CalculateSimilarityMeasure(GraphPSO.ontologyDAG, giveninput,
+						double similarity = CalculateSimilarityMeasure4Concepts(GraphPSO.ontologyDAG, giveninput,
 								existInput, semanticsPool);
 						pConn.setSimilarity(similarity);
 						pConnList0.add(pConn);
@@ -339,6 +339,22 @@ public class Service implements Comparable<Service> {
 		return sim;
 	}
 
+	public static double CalculateSimilarityMeasure4Concepts(DirectedGraph<String, DefaultEdge> g, String giveninput,
+			String existInput, SemanticsPool semanticsPool) {
+		// find instance related concept
+		OWLClass givenClass = semanticsPool.getOwlClassHashMap()
+				.get(semanticsPool.getOwlInstHashMap().get(giveninput).getRdfType().getResource().substring(1));
+		OWLClass relatedClass = semanticsPool.getOwlClassHashMap()
+				.get(semanticsPool.getOwlInstHashMap().get(existInput).getRdfType().getResource().substring(1));
+
+		String a = givenClass.getID();
+		String b = relatedClass.getID();
+//		System.out.println(giveninput+"  concept of "+a+";"+existInput+"  concept of" +b);
+
+		double similarity = GraphPSO.semanticMatrix.get(a, b);
+		return similarity;
+	}
+	
 	private static boolean isNeighbourConcept(DirectedGraph<String, DefaultEdge> g, String a, String b) {
 
 		boolean isNeighbourConcept = false;
