@@ -692,8 +692,8 @@ public class GraphPSO {
 		t = normaliseTime(t);
 		c = normaliseCost(c);
 
-		individual.fitness = ((W1 * mt) + (W2 * dst) + (W3 * a) + (W4 * r) + (W5 * t) + (W6 * c));
-//		individual.fitness = ((0.25 * a) + (0.25 * r) + (0.25 * t) + (0.25 * c));
+//		individual.fitness = ((W1 * mt) + (W2 * dst) + (W3 * a) + (W4 * r) + (W5 * t) + (W6 * c));
+		individual.fitness = ((0.25 * a) + (0.25 * r) + (0.25 * t) + (0.25 * c));
 
 
 		return individual.fitness;
@@ -760,7 +760,7 @@ public class GraphPSO {
 						bestAvailSoFar.get(i), bestReliaSoFar.get(i), bestTimeSoFar.get(i), bestCostSoFar.get(i),
 						bestMatchTypeSoFar.get(i), bestSemanticDistanceSoFar.get(i)));
 			}
-			writer.append(finalGraph);
+//			writer.append(finalGraph);
 			writer.append("\n");
 			writer.close();
 
