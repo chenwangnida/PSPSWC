@@ -2,14 +2,13 @@
 <problemStructure>
   <task>
     <provided>
-      <instance name="city"/>
-      <instance name="duration"/>
       <instance name="country"/>
+      <instance name="town"/>
+      <instance name="recommendedprice"/>
     </provided>
     <wanted>
-      <instance name="weatherseason"/>
-      <instance name="map"/>
-      <instance name="hotel"/>
+      <instance name="coffee"/>
+      <instance name="whiskey"/>
     </wanted>
   </task>
   <solutions />
