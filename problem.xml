@@ -2,14 +2,12 @@
 <problemStructure>
   <task>
     <provided>
-      <instance name="city"/>
-      <instance name="duration"/>
-      <instance name="country"/>
+      <instance name="academic-item-number"/>
     </provided>
     <wanted>
-      <instance name="weatherseason"/>
-      <instance name="map"/>
-      <instance name="hotel"/>
+      <instance name="maxprice"/>
+      <instance name="book-type"/>
+      <instance name="recommendedpriceindollar"/>
     </wanted>
   </task>
   <solutions />
