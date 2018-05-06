@@ -44,8 +44,8 @@ import com.google.common.collect.Table;
 public class GraphPSO {
 	// PSO settings
 	public List<Particle> swarm = new ArrayList<Particle>();
-	public static final int MAX_NUM_ITERATIONS = 200;
-	public static final int NUM_PARTICLES = 30;
+	public static final int MAX_NUM_ITERATIONS = 100;
+	public static final int NUM_PARTICLES = 200;
 	public static final float C1 = 1.49618f;
 	public static final float C2 = 1.49618f;
 	public static final float W = 0.7298f;
