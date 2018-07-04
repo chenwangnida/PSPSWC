@@ -36,6 +36,9 @@ public class Service implements Comparable<Service> {
 	private static Set<String> sourceSerIdSet = new HashSet<String>();
 
 	private double score;
+	
+	private int layer;
+
 
 	public Service(String serviceID, double[] qos, List<ServiceInput> inputList, List<ServiceOutput> outputList) {
 		super();
@@ -83,6 +86,14 @@ public class Service implements Comparable<Service> {
 
 	public Service(String serviceID) {
 		this.serviceID = serviceID;
+	}
+
+	public int getLayer() {
+		return layer;
+	}
+
+	public void setLayer(int layer) {
+		this.layer = layer;
 	}
 
 	@Override

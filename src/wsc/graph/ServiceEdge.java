@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jgraph.graph.DefaultEdge;
+import org.jgrapht.graph.DefaultWeightedEdge;
 
-public class ServiceEdge extends DefaultEdge implements Cloneable {
+public class ServiceEdge extends DefaultWeightedEdge implements Cloneable {
 
 	String SourceService;
 

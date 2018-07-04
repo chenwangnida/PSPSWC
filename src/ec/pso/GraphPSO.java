@@ -30,8 +30,10 @@ import org.jgrapht.Graphs;
 import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.alg.NaiveLcaFinder;
 import org.jgrapht.alg.shortestpath.AllDirectedPaths;
+import org.jgrapht.alg.shortestpath.BellmanFordShortestPath;
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -44,7 +46,7 @@ import com.google.common.collect.Table;
 public class GraphPSO {
 	// PSO settings
 	public List<Particle> swarm = new ArrayList<Particle>();
-	public static final int MAX_NUM_ITERATIONS = 100;
+	public static final int MAX_NUM_ITERATIONS = 200;
 	public static final int NUM_PARTICLES = 200;
 	public static final float C1 = 1.49618f;
 	public static final float C2 = 1.49618f;
@@ -144,7 +146,7 @@ public class GraphPSO {
 			System.out.println("Initial servicelist:(before removed later) "
 					+ initialWSCPool.getSwsPool().getServiceList().size());
 
-			initialWSCPool.allRelevantService(taskInput, taskOutput);
+			initialWSCPool.allRelevantService4Layers(taskInput, taskOutput);
 
 			System.out.println("All relevant service: " + initialWSCPool.getServiceSequence().size());
 			semanticMatrix = HashBasedTable.create();
@@ -185,7 +187,7 @@ public class GraphPSO {
 
 		int i = 0;
 		Particle p;
-		DirectedGraph<String, ServiceEdge> directedGraph;
+		DefaultDirectedWeightedGraph<String, ServiceEdge> directedGraph;
 		long initialization = System.currentTimeMillis() - initialisationStartTime;
 
 		while (i < MAX_NUM_ITERATIONS) {
@@ -549,7 +551,7 @@ public class GraphPSO {
 		return g;
 	}
 
-	private void aggregationAttribute(Particle individual, DirectedGraph<String, ServiceEdge> directedGraph) {
+	private void aggregationAttribute(Particle individual, DefaultDirectedWeightedGraph<String, ServiceEdge> directedGraph) {
 
 		double a = 1.0;
 		double r = 1.0;
@@ -574,8 +576,8 @@ public class GraphPSO {
 		}
 
 		// set time aggregation
-		t = getLongestPathVertexList(directedGraph, serviceQoSMap);
-
+		// t = getLongestPathVertexList(directedGraph, serviceQoSMap);
+		t = getLongestPathVertexListUsingBellmanFordShortestPath(directedGraph, serviceQoSMap);
 		// set mt,dst aggregation
 
 		for (ServiceEdge serviceEdge : directedGraph.edgeSet()) {
@@ -591,11 +593,36 @@ public class GraphPSO {
 		individual.setCost(c);
 		individual.setStrRepresentation(directedGraph.toString());
 	}
+	
+	public double getLongestPathVertexListUsingBellmanFordShortestPath(
+			DefaultDirectedWeightedGraph<String, ServiceEdge> g, Map<String, double[]> serQoSMap) {
+		// A algorithm to find all paths
+		for (String vertice : g.vertexSet()) {
+			if (!vertice.equals("startNode")) {
+				double responseTime = 0;
+				if (!vertice.equals("endNode")) {
+					responseTime = serQoSMap.get(vertice)[TIME];
+				} else {
+					responseTime = 0;
+				}
+				for (ServiceEdge edge : g.incomingEdgesOf(vertice)) {
+					// set it negative because we aim to find longest path
+					g.setEdgeWeight(edge, -responseTime);
+				}
+			}
+		}
 
-	private DirectedGraph<String, ServiceEdge> graphRepresentation(List<String> taskInput, List<String> taskOutput,
+		GraphPath<String, ServiceEdge> pathList = BellmanFordShortestPath.findPathBetween(g, "startNode", "endNode");
+		double maxTime = -pathList.getWeight();
+		return maxTime;
+
+	}
+
+
+	private DefaultDirectedWeightedGraph<String, ServiceEdge> graphRepresentation(List<String> taskInput, List<String> taskOutput,
 			float[] weights) {
 
-		DirectedGraph<String, ServiceEdge> directedGraph = new DefaultDirectedGraph<String, ServiceEdge>(
+		DefaultDirectedWeightedGraph<String, ServiceEdge> directedGraph = new DefaultDirectedWeightedGraph<String, ServiceEdge>(
 				ServiceEdge.class);
 
 		initialWSCPool.createGraphService(taskInput, taskOutput, directedGraph, weights, serviceToIndexMap);
